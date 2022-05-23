@@ -1,0 +1,59 @@
+bmscecse@bmscecse-HP-Pro-3330-MT:~$ cqlsh
+Connected to Test Cluster at 127.0.0.1:9042
+[cqlsh 6.0.0 | Cassandra 4.0.3 | CQL spec 3.4.5 | Native protocol v5]
+Use HELP for help.
+cqlsh> create keyspace library_info with replication = {'class':'SimpleStrategy','replication_factor':2};
+AlreadyExists: Keyspace 'library_info' already exists
+cqlsh> describe keyspaces;
+
+library_info  system_auth         system_traces        
+student       system_distributed  system_views        
+system        system_schema       system_virtual_schema
+
+cqlsh:library_info> create table library_details(stud_id int,counter_value counter,stud_name text,book_id int,book_name text,date_of_issue timestamp,primary key(stud_id,stud_name,book_name,date_of_issue,book_id));
+AlreadyExists: Table 'library_info.library_details' already exists
+cqlsh:library_info> create table library_information(stud_id int,counter_value counter,stud_name text,book_id int,book_name text,date_of_issue timestamp,primary key(stud_id,stud_name,book_name,date_of_issue,book_id));
+cqlsh:library_info> update library_information set counter_value = counter_value+1 where stud_id = 111 and stud_name ='mithil' and book_name ='BDA' and date_of_issue = '2020-11-08' and book_id = 200;
+cqlsh:library_info> update library_information set counter_value = counter_value+1 where stud_id = 112 and stud_name ='myth' and book_name ='ML' and date_of_issue = '2020-05-01' and book_id = 300;
+cqlsh:library_info> update library_information set counter_value = counter_value+1 where stud_id = 113 and stud_name ='mith' and book_name ='OOMD' and date_of_issue = '2020-01-01' and book_id = 400;
+cqlsh:library_info> select * from library-information;
+SyntaxException: line 1:25 mismatched character 'o' expecting set null
+cqlsh:library_info> select * from library_information;
+
+ stud_id | stud_name | book_name | date_of_issue                   | book_id | counter_value
+---------+-----------+-----------+---------------------------------+---------+---------------
+     111 |    mithil |       BDA | 2020-11-07 18:30:00.000000+0000 |     200 |             1
+     113 |      mith |      OOMD | 2019-12-31 18:30:00.000000+0000 |     400 |             1
+     112 |      myth |        ML | 2020-04-30 18:30:00.000000+0000 |     300 |             1
+
+(3 rows)
+cqlsh:library_info> update library_information set counter_value = counter_value+1 where stud_id = 111 and stud_name ='mithil' and book_name ='BDA' and date_of_issue = '2020-11-08' and book_id = 200;
+cqlsh:library_info>  select * from library_information where stud_id = 111;
+
+ stud_id | stud_name | book_name | date_of_issue                   | book_id | counter_value
+---------+-----------+-----------+---------------------------------+---------+---------------
+     111 |    mithil |       BDA | 2020-11-07 18:30:00.000000+0000 |     200 |             2
+
+cqlsh:library_info> copy library_information(stud_id,stud_name,book_id,book_name,date_of_issue,counter_value) to '/home/bmscecse/library_information.csv';
+Using 3 child processes
+
+Starting copy of library_info.library_information with columns [stud_id, stud_name, book_id, book_name, date_of_issue, counter_value].
+Processed: 3 rows; Rate:      32 rows/s; Avg. rate:      32 rows/s
+3 rows exported to 1 files in 0.097 seconds.
+cqlsh:library_info> truncate library_information;
+cqlsh:library_info> copy library_information(stud_id,stud_name,book_id,book_name,date_of_issue,counter_value) from '/home/bmscecse/library_information.csv';
+Using 3 child processes
+
+Starting copy of library_info.library_information with columns [stud_id, stud_name, book_id, book_name, date_of_issue, counter_value].
+Processed: 3 rows; Rate:       5 rows/s; Avg. rate:       7 rows/s
+3 rows imported from 1 files in 0.418 seconds (0 skipped).
+cqlsh:library_info> select * from library_information;
+
+ stud_id | stud_name | book_name | date_of_issue                   | book_id | counter_value
+---------+-----------+-----------+---------------------------------+---------+---------------
+     111 |    mithil |       BDA | 2020-11-07 18:30:00.000000+0000 |     200 |             2
+     113 |      mith |      OOMD | 2019-12-31 18:30:00.000000+0000 |     400 |             1
+     112 |      myth |        ML | 2020-04-30 18:30:00.000000+0000 |     300 |             1
+
+(3 rows)
+cqlsh:library_info>
